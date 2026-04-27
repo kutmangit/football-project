@@ -1,0 +1,712 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="matches-container">
+    <div class="container">
+        
+        <!-- Заголовок -->
+        <div class="text-center mb-5">
+            <div class="matches-icon mb-3">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <h1 class="matches-title">Календарь матчей</h1>
+            <p class="matches-subtitle">Выберите матч и приобретите билеты</p>
+        </div>
+
+        <!-- Переключение вкладок -->
+        <div class="tab-buttons text-center mb-5">
+            <button class="tab-btn active" onclick="showTab('upcoming')">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Предстоящие матчи
+                <span class="tab-badge">⚡</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('past')">
+                <i class="fas fa-history me-2"></i>
+                Прошедшие матчи
+                <span class="tab-badge">📊</span>
+            </button>
+        </div>
+
+        <!-- ================= ПРЕДСТОЯЩИЕ МАТЧИ ================= -->
+        <div id="upcoming-tab" class="tab-content active">
+            {% for league_data in leagues %}
+            <div class="league-section mb-5">
+                <div class="league-header">
+                    <i class="fas fa-trophy me-2"></i>
+                    <h2 class="league-title">{{ league_data.league.name }}</h2>
+                    <div class="league-stats">
+                        <span class="badge">
+                            <i class="fas fa-calendar-week me-1"></i>
+                            {{ league_data.upcoming|length }} матчей
+                        </span>
+                    </div>
+                </div>
+                
+                {% if league_data.upcoming %}
+                <div class="matches-grid">
+                    {% for item in league_data.upcoming %}
+                    <div class="match-card upcoming-match">
+                        <div class="match-card-header">
+                            <div class="match-date">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                {{ item.obj.date }}
+                            </div>
+                            <div class="match-time">
+                                <i class="far fa-clock me-1"></i>
+                                {{ item.obj.time }}
+                            </div>
+                        </div>
+                        
+                        <div class="match-teams">
+                            <div class="team home-team">
+                                <div class="team-name">{{ item.obj.home_team }}</div>
+                            </div>
+                            <div class="match-vs">
+                                <span>VS</span>
+                            </div>
+                            <div class="team away-team">
+                                <div class="team-name">{{ item.obj.away_team }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="match-score">
+                            {% if item.obj.score1 is not None %}
+                            <span class="score">{{ item.obj.score1 }} : {{ item.obj.score2 }}</span>
+                            {% else %}
+                            <span class="score upcoming">— : —</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="match-info">
+                            <div class="stadium-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ item.obj.stadium }}
+                            </div>
+                        </div>
+                        
+                        <div class="match-actions">
+                            {% if request.user.is_staff %}
+                                {% if not item.has_tickets %}
+                                    <a href="{% url 'generate_tickets' item.obj.id %}" class="btn btn-create">
+                                        <i class="fas fa-ticket-alt me-1"></i> Создать билеты
+                                    </a>
+                                {% else %}
+                                    <span class="badge-created">
+                                        <i class="fas fa-check-circle me-1"></i> Билеты созданы
+                                    </span>
+                                {% endif %}
+                                <div class="admin-actions">
+                                    <a href="{% url 'edit_match' item.obj.id %}" class="btn-icon edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'delete_match' item.obj.id %}" 
+                                       class="btn-icon delete"
+                                       onclick="return confirm('Вы уверены, что хотите удалить этот матч?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            {% else %}
+                                {% if item.has_tickets %}
+                                    <a href="{% url 'match_tickets' item.obj.id %}" class="btn btn-buy">
+                                        <i class="fas fa-ticket-alt me-2"></i>Купить билет
+                                    </a>
+                                {% else %}
+                                    <span class="no-tickets">
+                                        <i class="fas fa-hourglass me-1"></i> Билеты скоро появятся
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>Нет предстоящих матчей в этой лиге</p>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-trophy"></i>
+                <p>Нет доступных лиг</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ================= ПРОШЕДШИЕ МАТЧИ ================= -->
+        <div id="past-tab" class="tab-content">
+            {% for league_data in leagues %}
+            <div class="league-section mb-5">
+                <div class="league-header past-header">
+                    <i class="fas fa-trophy me-2"></i>
+                    <h2 class="league-title">{{ league_data.league.name }}</h2>
+                    <div class="league-stats">
+                        <span class="badge">
+                            <i class="fas fa-check-circle me-1"></i>
+                            {{ league_data.past|length }} матчей
+                        </span>
+                    </div>
+                </div>
+                
+                {% if league_data.past %}
+                <div class="matches-grid past-grid">
+                    {% for item in league_data.past %}
+                    <div class="match-card past-match">
+                        <div class="match-card-header">
+                            <div class="match-date">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                {{ item.obj.date }}
+                            </div>
+                            <div class="match-time">
+                                <i class="far fa-clock me-1"></i>
+                                {{ item.obj.time }}
+                            </div>
+                            <div class="match-result-badge">
+                                <i class="fas fa-check-circle"></i> Завершен
+                            </div>
+                        </div>
+                        
+                        <div class="match-teams">
+                            <div class="team home-team">
+                                <div class="team-name">{{ item.obj.home_team }}</div>
+                            </div>
+                            <div class="match-vs past">
+                                <span>VS</span>
+                            </div>
+                            <div class="team away-team">
+                                <div class="team-name">{{ item.obj.away_team }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="match-score past-score">
+                            <span class="score final">{{ item.obj.score1 }} : {{ item.obj.score2 }}</span>
+                        </div>
+                        
+                        <div class="match-info">
+                            <div class="stadium-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ item.obj.stadium }}
+                            </div>
+                        </div>
+                        
+                        {% if request.user.is_staff %}
+                        <div class="match-actions past-actions">
+                            <a href="{% url 'edit_match' item.obj.id %}" class="btn-icon edit">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_match' item.obj.id %}" 
+                               class="btn-icon delete"
+                               onclick="return confirm('Удалить матч?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <p>Нет прошедших матчей в этой лиге</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<style>
+.matches-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    padding: 2rem 1rem;
+}
+
+.matches-icon {
+    font-size: 4rem;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.matches-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #94a3b8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.matches-subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+/* Кнопки вкладок */
+.tab-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(30, 41, 59, 0.7);
+    color: #94a3b8;
+    backdrop-filter: blur(10px);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
+}
+
+.tab-btn:hover:not(.active) {
+    background: rgba(51, 65, 85, 0.9);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.tab-badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.9rem;
+}
+
+/* Контент вкладок */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Секция лиги */
+.league-section {
+    margin-bottom: 3rem;
+}
+
+.league-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+}
+
+.league-header i {
+    font-size: 2rem;
+    color: #fbbf24;
+}
+
+.league-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.league-stats .badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* Сетка матчей */
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+/* Карточка матча */
+.match-card {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.match-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: left 0.5s;
+}
+
+.match-card:hover::before {
+    left: 100%;
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(251, 191, 36, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.upcoming-match {
+    border-top: 3px solid #fbbf24;
+}
+
+.past-match {
+    opacity: 0.8;
+    border-top: 3px solid #64748b;
+}
+
+.match-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.match-date, .match-time {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.match-result-badge {
+    font-size: 0.7rem;
+    background: rgba(34, 197, 94, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: #4ade80;
+}
+
+/* Команды */
+.match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.team {
+    flex: 1;
+    text-align: center;
+}
+
+.team-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.match-vs {
+    width: 60px;
+    text-align: center;
+}
+
+.match-vs span {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.match-vs.past span {
+    background: #475569;
+    color: #94a3b8;
+}
+
+/* Счет */
+.match-score {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.score {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.score.upcoming {
+    font-size: 1.5rem;
+    color: #64748b;
+}
+
+.past-score .score.final {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+/* Информация */
+.match-info {
+    margin-bottom: 20px;
+}
+
+.stadium-info {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-align: center;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.stadium-info i {
+    margin-right: 5px;
+    color: #fbbf24;
+}
+
+/* Кнопки действий */
+.match-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-buy {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-buy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.badge-created {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.no-tickets {
+    color: #64748b;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-icon {
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-icon.edit {
+    background: #d97706;
+    color: white;
+}
+
+.btn-icon.delete {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.past-actions {
+    justify-content: center;
+}
+
+.past-actions .btn-icon {
+    width: auto;
+    padding: 8px 16px;
+    gap: 5px;
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #64748b;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .matches-title {
+        font-size: 1.8rem;
+    }
+    
+    .league-title {
+        font-size: 1.3rem;
+    }
+    
+    .matches-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-name {
+        font-size: 0.9rem;
+    }
+    
+    .score {
+        font-size: 1.3rem;
+    }
+    
+    .tab-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .match-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .match-teams {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .match-vs {
+        order: 2;
+    }
+    
+    .home-team {
+        order: 1;
+    }
+    
+    .away-team {
+        order: 3;
+    }
+}
+</style>
+
+<script>
+function showTab(tab) {
+    // Скрываем все вкладки
+    document.getElementById('upcoming-tab').classList.remove('active');
+    document.getElementById('past-tab').classList.remove('active');
+    
+    // Показываем выбранную
+    document.getElementById(tab + '-tab').classList.add('active');
+    
+    // Обновляем активную кнопку
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Находим и активируем нужную кнопку
+    if (tab === 'upcoming') {
+        buttons[0].classList.add('active');
+    } else {
+        buttons[1].classList.add('active');
+    }
+}
+
+// Устанавливаем начальное состояние (показываем предстоящие матчи)
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('upcoming');
+});
+</script>
+
+{% endblock %}

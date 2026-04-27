@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лиги - Football Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0f172a 50%, #1a1a3e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+            animation: rotateBg 30s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Карточка контейнера */
+        .leagues-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Заголовок */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #0f172a;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* Счетчик */
+        .counter {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 50px;
+            padding: 10px 24px;
+            color: #fbbf24;
+            font-weight: 700;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .counter i {
+            margin-right: 8px;
+        }
+
+        /* Сетка лиг */
+        .leagues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Карточка лиги */
+        .league-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+        }
+
+        .league-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .league-card:hover::before {
+            left: 100%;
+        }
+
+        .league-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .league-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #fbbf24;
+            transition: all 0.3s;
+        }
+
+        .league-card:hover .league-icon {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.15));
+        }
+
+        .league-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .league-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .stat i {
+            color: #fbbf24;
+            font-size: 0.7rem;
+        }
+
+        /* Кнопки администратора */
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-icon {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            color: #60a5fa;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+            color: #f87171;
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 24px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #64748b;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Кнопка создания лиги */
+        .create-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .leagues-card {
+                padding: 25px;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .title-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+            
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .leagues-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .leagues-card {
+                padding: 20px;
+            }
+            
+            .league-name {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="leagues-card">
+            <div class="header-section">
+                <div class="title-wrapper">
+                    <div class="title-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h2>Футбольные лиги</h2>
+                </div>
+                <div class="counter">
+                    <i class="fas fa-chart-line"></i>
+                    Всего: {{ leagues|length }} лиг
+                </div>
+            </div>
+
+            <div class="leagues-grid">
+                {% for league in leagues %}
+                <div class="league-card">
+                    <a href="/teams/{{ league.id }}/" style="text-decoration: none; display: block;">
+                        <div class="league-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3 class="league-name">{{ league.name }}</h3>
+                        <div class="league-stats">
+                            <div class="stat">
+                                <i class="fas fa-users"></i>
+                                <span>{{ league.team_set.all|length }} команд</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-futbol"></i>
+                                <span>Сезон 2026</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    {% if request.user.is_staff %}
+                    <div class="admin-actions">
+                        <a href="{% url 'edit_league' league.id %}" class="btn-icon btn-edit">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </a>
+                        <a href="{% url 'delete_league' league.id %}" class="btn-icon btn-delete" 
+                           onclick="return confirm('Вы уверены, что хотите удалить лигу «{{ league.name }}»?')">
+                            <i class="fas fa-trash"></i> Удалить
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>Нет доступных лиг</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if request.user.is_staff %}
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="/add-league/" class="create-btn">
+                    <i class="fas fa-plus-circle"></i> Создать новую лигу
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.register-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.register-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.register-card {
+    position: relative;
+    z-index: 1;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.register-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.register-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+}
+
+.register-subtitle {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* Форма */
+.register-form {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #10b981;
+}
+
+.form-group label .required {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #10b981;
+    background: rgba(30, 41, 59, 0.9);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-control::placeholder {
+    color: #64748b;
+}
+
+/* Пароль с подсказкой */
+.password-hint {
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.password-hint i {
+    margin-right: 4px;
+}
+
+/* Чекбокс согласия */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #10b981;
+}
+
+.checkbox-group label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-group a {
+    color: #10b981;
+    text-decoration: none;
+}
+
+.checkbox-group a:hover {
+    text-decoration: underline;
+}
+
+/* Кнопка */
+.btn-register {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-register:active {
+    transform: translateY(0);
+}
+
+/* Дополнительные ссылки */
+.register-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-link {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.login-link a {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Сообщения об ошибках */
+.errorlist {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    list-style: none;
+    color: #ef4444;
+    font-size: 0.85rem;
+}
+
+.errorlist li {
+    margin: 0;
+}
+
+/* Сообщения об успехе */
+.success-message {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    color: #10b981;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Валидация */
+.form-control.is-invalid {
+    border-color: #ef4444;
+}
+
+.form-control.is-valid {
+    border-color: #10b981;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .register-card {
+        padding: 30px 25px;
+    }
+    
+    .register-title {
+        font-size: 1.6rem;
+    }
+    
+    .register-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-card {
+        padding: 25px 20px;
+    }
+    
+    .register-title {
+        font-size: 1.4rem;
+    }
+    
+    .form-control {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-register {
+        padding: 12px;
+    }
+    
+    .checkbox-group label {
+        font-size: 0.7rem;
+    }
+}
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="register-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1 class="register-title">Создать аккаунт</h1>
+            <p class="register-subtitle">Присоединяйтесь к футбольному сообществу</p>
+        </div>
+
+        <form method="post" class="register-form" id="registerForm">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    <i class="
+                        {% if field.name == 'username' %}fas fa-user
+                        {% elif field.name == 'email' %}fas fa-envelope
+                        {% elif field.name == 'password1' %}fas fa-key
+                        {% elif field.name == 'password2' %}fas fa-check-circle
+                        {% else %}fas fa-edit{% endif %}
+                    "></i>
+                    {{ field.label }}
+                    {% if field.field.required %}
+                        <span class="required">*</span>
+                    {% endif %}
+                </label>
+                {{ field }}
+                {% if field.name == 'password1' %}
+                    <div class="password-hint">
+                        <i class="fas fa-info-circle"></i> Пароль должен содержать минимум 8 символов
+                    </div>
+                {% endif %}
+                {% if field.errors %}
+                    <ul class="errorlist" style="margin-top: 5px; padding: 5px 10px;">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="agree" required>
+                <label for="agree">
+                    Я согласен с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-register" id="submitBtn" disabled>
+                <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </button>
+        </form>
+        
+        <div class="register-footer">
+            <div class="login-link">
+                Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Активация кнопки после согласия
+document.addEventListener('DOMContentLoaded', function() {
+    const agreeCheckbox = document.getElementById('agree');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (agreeCheckbox && submitBtn) {
+        agreeCheckbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Валидация пароля в реальном времени
+    const password1 = document.querySelector('input[name="password1"]');
+    const password2 = document.querySelector('input[name="password2"]');
+    
+    if (password2) {
+        password2.addEventListener('input', function() {
+            if (password1.value !== this.value) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else {
+                this.classList.add('is-valid');
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

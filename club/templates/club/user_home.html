@@ -1,0 +1,649 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <div class="container">
+        
+        <!-- Приветственная секция -->
+        <div class="welcome-section text-center mb-5">
+            <div class="welcome-badge">
+                <i class="fas fa-user-check"></i> Добро пожаловать
+            </div>
+            <div class="user-avatar mb-3">
+                <div class="avatar-circle">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="avatar-status online"></div>
+            </div>
+            <h1 class="welcome-title">{{ user.username }}</h1>
+            <p class="welcome-subtitle">Добро пожаловать в футбольную систему</p>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Дата регистрации: {{ user.date_joined|date:"d.m.Y" }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Билетов куплено: {{ user.ticket_set.all|length }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основные разделы -->
+        <div class="sections-grid mb-5">
+            <h2 class="section-title">
+                <i class="fas fa-compass"></i>
+                <span>Навигация по сайту</span>
+            </h2>
+            <div class="cards-grid">
+                <a href="/leagues/" class="dashboard-card leagues-card">
+                    <div class="card-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Лиги</h3>
+                        <p>Просмотр всех футбольных лиг и турниров</p>
+                        <span class="card-link">Перейти →</span>
+                    </div>
+                    <div class="card-bg"></div>
+                </a>
+                
+                <a href="/matches/" class="dashboard-card matches-card">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Матчи</h3>
+                        <p>Расписание матчей и результаты игр</p>
+                        <span class="card-link">Перейти →</span>
+                    </div>
+                    <div class="card-bg"></div>
+                </a>
+                
+                <a href="/tables/" class="dashboard-card tables-card">
+                    <div class="card-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Турнирная таблица</h3>
+                        <p>Рейтинг команд и статистика сезона</p>
+                        <span class="card-link">Перейти →</span>
+                    </div>
+                    <div class="card-bg"></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Дополнительная информация -->
+        <div class="info-panels">
+            <div class="panel-card">
+                <div class="panel-icon">
+                    <i class="fas fa-futbol"></i>
+                </div>
+                <div class="panel-content">
+                    <h4>Предстоящие матчи</h4>
+                    <p>Следите за актуальными матчами и покупайте билеты</p>
+                    <div class="panel-stats">
+                        <span>Следующий матч:</span>
+                        <strong>Сегодня, 20:00</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-card">
+                <div class="panel-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="panel-content">
+                    <h4>Билеты</h4>
+                    <p>Управляйте своими билетами и историей посещений</p>
+                    <div class="panel-stats">
+                        <span>Активных билетов:</span>
+                        <strong>{{ user.ticket_set.all|length }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-card">
+                <div class="panel-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="panel-content">
+                    <h4>Уведомления</h4>
+                    <p>Будьте в курсе последних новостей и обновлений</p>
+                    <div class="panel-notification">
+                        <i class="fas fa-circle"></i>
+                        <span>Новых уведомлений: 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Быстрый доступ -->
+        <div class="quick-access mt-4">
+            <div class="quick-header">
+                <i class="fas fa-bolt"></i>
+                <h3>Быстрый доступ</h3>
+            </div>
+            <div class="quick-links">
+                <a href="/profile/" class="quick-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Мой профиль</span>
+                </a>
+                <a href="/matches/" class="quick-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Расписание</span>
+                </a>
+                <a href="/tables/" class="quick-link">
+                    <i class="fas fa-chart-simple"></i>
+                    <span>Таблица</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Декоративный элемент -->
+        <div class="footer-note text-center mt-5">
+            <p>
+                <i class="fas fa-shield-alt"></i>
+                Ваш аккаунт защищен
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.dashboard-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.5), transparent);
+}
+
+/* Приветственная секция */
+.welcome-section {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(251, 191, 36, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 6px 16px;
+    border-radius: 50px;
+    color: #fbbf24;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.user-avatar {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #0f172a;
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.avatar-status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 3px solid #0f172a;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin: 1rem 0 0.5rem 0;
+    letter-spacing: -0.5px;
+}
+
+.welcome-subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item i {
+    color: #fbbf24;
+}
+
+/* Заголовки секций */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title i {
+    color: #fbbf24;
+    font-size: 1.6rem;
+}
+
+.section-title span {
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* Карточки */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.dashboard-card {
+    position: relative;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 30px;
+    display: flex;
+    gap: 20px;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 70% 30%, rgba(251, 191, 36, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dashboard-card:hover .card-bg {
+    opacity: 1;
+}
+
+.card-icon {
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all 0.3s;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-card:hover .card-icon {
+    transform: scale(1.05);
+}
+
+.leagues-card .card-icon i { color: #fbbf24; }
+.matches-card .card-icon i { color: #3b82f6; }
+.tables-card .card-icon i { color: #10b981; }
+
+.card-content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.card-content h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 8px 0;
+}
+
+.card-content p {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.card-link {
+    color: #fbbf24;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.dashboard-card:hover .card-link {
+    transform: translateX(5px);
+}
+
+/* Информационные панели */
+.info-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 3rem;
+}
+
+.panel-card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+.panel-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(30, 41, 59, 0.8);
+}
+
+.panel-icon {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #0f172a;
+}
+
+.panel-content {
+    flex: 1;
+}
+
+.panel-content h4 {
+    color: #e2e8f0;
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.panel-content p {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin: 0 0 10px 0;
+}
+
+.panel-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.panel-stats span {
+    color: #94a3b8;
+}
+
+.panel-stats strong {
+    color: #fbbf24;
+}
+
+.panel-notification {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.panel-notification i {
+    color: #fbbf24;
+    font-size: 0.6rem;
+    animation: pulse 2s infinite;
+}
+
+.panel-notification span {
+    color: #94a3b8;
+}
+
+/* Быстрый доступ */
+.quick-access {
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quick-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.quick-header i {
+    font-size: 1.5rem;
+    color: #fbbf24;
+}
+
+.quick-header h3 {
+    color: #e2e8f0;
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.quick-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.quick-link {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.quick-link:hover {
+    transform: translateY(-2px);
+    border-color: #fbbf24;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.quick-link i {
+    font-size: 1rem;
+}
+
+/* Футер */
+.footer-note {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+}
+
+.footer-note p {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.footer-note i {
+    color: #10b981;
+    margin-right: 8px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .welcome-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .dashboard-card {
+        padding: 20px;
+    }
+    
+    .card-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+    }
+    
+    .card-content h3 {
+        font-size: 1.2rem;
+    }
+    
+    .info-panels {
+        grid-template-columns: 1fr;
+    }
+    
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+    
+    .user-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-item {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .card-link {
+        justify-content: center;
+    }
+    
+    .panel-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .panel-icon {
+        margin: 0 auto;
+    }
+    
+    .panel-stats {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .quick-links {
+        justify-content: center;
+    }
+}
+</style>
+
+{% endblock %}

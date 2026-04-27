@@ -1,0 +1,70 @@
+{% extends 'club/base.html' %}
+
+{% block content %}
+
+<h2 class="text-center mb-3">
+    {{ match.home_team }} vs {{ match.away_team }} ⚽
+</h2>
+
+<p class="text-center">{{ match.date }} | {{ match.time }}</p>
+
+<h4 class="text-center">🏟️ Stadium Map</h4>
+
+<!-- СЦЕНА -->
+<div class="text-center mb-4">
+    <div style="background:#444;color:white;padding:10px;border-radius:10px;width:200px;margin:auto;">
+        FIELD
+    </div>
+</div>
+
+<!-- СЕКТОРА -->
+{% regroup tickets by seat.sector as sectors %}
+
+{% for sector in sectors %}
+    <h5 class="mt-4">{{ sector.grouper.name }}</h5>
+
+    <div class="d-flex flex-wrap" style="max-width:600px;">
+
+    {% for ticket in sector.list %}
+        
+        {% if ticket.is_sold %}
+            <div class="seat sold">
+                {{ ticket.seat.number }}
+            </div>
+        {% else %}
+            <a href="/buy/{{ ticket.id }}/" class="seat free">
+                {{ ticket.seat.number }}
+            </a>
+        {% endif %}
+
+    {% endfor %}
+
+    </div>
+{% endfor %}
+
+<style>
+.seat {
+    width:40px;
+    height:40px;
+    margin:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    font-size:12px;
+    text-decoration:none;
+    color:white;
+}
+
+/* свободные */
+.free {
+    background:green;
+}
+
+/* занятые */
+.sold {
+    background:red;
+}
+</style>
+
+{% endblock %}

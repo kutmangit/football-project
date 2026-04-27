@@ -1,0 +1,12 @@
+<h3>Изменить билеты для матча</h3>
+
+<h5>{{ match.home_team }} vs {{ match.away_team }}</h5>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Количество мест:</label>
+    <input type="number" name="count" class="form-control" required>
+
+    <button class="btn btn-primary mt-2">Сохранить</button>
+</form>

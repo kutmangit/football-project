@@ -1,0 +1,29 @@
+<h2>{{ match }}</h2>
+
+<div style="display:grid; grid-template-columns: repeat(10, 40px); gap:5px;">
+{% for i in "123456789012345678901234567890" %}
+    
+    {% with seat_num=forloop.counter %}
+    
+    {% if tickets|dictsort:"seat"|length > 0 %}
+    
+    {% endif %}
+    
+    <a href="/buy-seat/{{ match.id }}/{{ seat_num }}/"
+       style="
+       width:40px;
+       height:40px;
+       display:flex;
+       align-items:center;
+       justify-content:center;
+       background:green;
+       color:white;
+       text-decoration:none;
+       ">
+       {{ seat_num }}
+    </a>
+
+    {% endwith %}
+
+{% endfor %}
+</div>
